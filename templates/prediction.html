@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Campus Recruitment Prediction</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      color: white;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      max-width: 650px;
+      text-align: center;
+      backdrop-filter: blur(20px);
+    }
+    h1 {
+      color: white;
+    }
+    p {
+      font-size: 18px;
+    }
+    .button {
+      display: inline-block;
+      padding: 12px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      text-decoration: none;
+      color: white;
+      background: linear-gradient(90deg, #ff416c, #ff4b2b);
+      border-radius: 8px;
+      margin-top: 20px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      transition: 0.3s ease-in-out;
+    }
+    .button:hover {
+      transform: scale(1.05);
+      background: linear-gradient(90deg, #ff4b2b, #ff416c);
+    }
+    #chartContainer {
+      margin-top: 30px;
+    }
+    select {
+      padding: 10px;
+      background-color: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      margin-top: 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .job-list {
+      margin-top: 20px;
+      text-align: left;
+    }
+    .job-list h2 {
+      text-align: center;
+    }
+    .job-item {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    .job-item strong {
+      color: #ffcc00;
+    }
+    canvas {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 10px;
+      border-radius: 10px;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Campus Recruitment Prediction</h1>
+    <p>Your predicted salary is <span id="result">{{ result }}</span> INR.</p>
+
+    <!-- Dropdown for selecting graphs -->
+    <select id="graphSelector">
+      <option value="salaryBarChart">Salary Prediction - Bar</option>
+      <option value="salaryLineChart">Salary Prediction - Line</option>
+      <option value="salaryPieChart">Salary Prediction - Pie</option>
+      <option value="salaryRadarChart">Salary Prediction - Radar</option>
+      <option value="jobBarChart">Job Roles - Bar</option>
+      <option value="jobPieChart">Job Roles - Pie</option>
+      <option value="jobLineChart">Job Roles - Line</option>
+    </select>
+
+    <div id="chartContainer">
+      <canvas id="salaryBarChartCanvas" width="400" height="200"></canvas>
+      <canvas id="salaryLineChartCanvas" width="400" height="200" style="display:none;"></canvas>
+      <canvas id="salaryRadarChartCanvas" width="400" height="200" style="display:none;"></canvas>
+      <canvas id="salaryPieChartCanvas" width="400" height="200" style="display:none;"></canvas>
+      <canvas id="jobBarChartCanvas" width="400" height="200" style="display:none;"></canvas>
+      <canvas id="jobPieChartCanvas" width="400" height="200" style="display:none;"></canvas>
+      <canvas id="jobLineChartCanvas" width="400" height="200" style="display:none;"></canvas>
+    </div>
+
+    <div class="job-list">
+      <h2>Job Openings Based on Your Profile</h2>
+      {% for job in job_roles %}
+      <div class="job-item">
+        <p><strong>{{ job.company }}</strong>: {{ job.role }} - <span>{{ job.salary }} INR</span></p>
+      </div>
+      {% endfor %}
+    </div>
+
+    <a class="button" href="/">Home</a>
+  </div>
+
+  <script>
+    const predictedSalary = parseFloat("{{ result }}");
+    const jobSalaries = [{% for job in job_roles %}{{ job.salary }}, {% endfor %}];
+    const jobLabels = [{% for job in job_roles %}"{{ job.company }} - {{ job.role }}", {% endfor %}];
+
+    // General chart options for white text
+    const chartOptions = {
+      scales: {
+        x: {
+          ticks: {
+            color: 'white'
+          }
+        },
+        y: {
+          ticks: {
+            color: 'white',
+            callback: function(value) {
+              return value + ' INR';
+            }
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          labels: {
+            color: 'white'
+          }
+        },
+        tooltip: {
+          titleColor: 'white',
+          bodyColor: 'white'
+        },
+        title: {
+          display: true,
+          color: 'white'
+        }
+      }
+    };
+
+    // Bar Chart for salary prediction
+    const salaryBarChartCtx = document.getElementById('salaryBarChartCanvas').getContext('2d');
+    const salaryBarChart = new Chart(salaryBarChartCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Minimum', 'Predicted', 'Maximum'],
+        datasets: [{
+          label: 'Salary (INR)',
+          data: [predictedSalary * 0.8, predictedSalary, predictedSalary * 1.2],
+          backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(54, 162, 235, 0.6)', 'rgba(255, 206, 86, 0.6)'],
+          borderColor: ['rgba(75, 192, 192, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)'],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        ...chartOptions,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Salary Prediction - Bar Chart',
+            color: 'white'
+          }
+        }
+      }
+    });
+
+    // Line Chart for salary prediction
+    const salaryLineChartCtx = document.getElementById('salaryLineChartCanvas').getContext('2d');
+    const salaryLineChart = new Chart(salaryLineChartCtx, {
+      type: 'line',
+      data: {
+        labels: ['Minimum', 'Predicted', 'Maximum'],
+        datasets: [{
+          label: 'Salary (INR)',
+          data: [predictedSalary * 0.8, predictedSalary, predictedSalary * 1.2],
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 2,
+          fill: false
+        }]
+      },
+      options: {
+        ...chartOptions,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Salary Prediction - Line Chart',
+            color: 'white'
+          }
+        }
+      }
+    });
+
+    // Radar Chart for salary prediction
+    const salaryRadarChartCtx = document.getElementById('salaryRadarChartCanvas').getContext('2d');
+    const salaryRadarChart = new Chart(salaryRadarChartCtx, {
+      type: 'radar',
+      data: {
+        labels: ['Minimum', 'Predicted', 'Maximum'],
+        datasets: [{
+          label: 'Salary (INR)',
+          data: [predictedSalary * 0.8, predictedSalary, predictedSalary * 1.2],
+          backgroundColor: 'rgba(54, 162, 235, 0.6)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        ...chartOptions,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Salary Prediction - Radar Chart',
+            color: 'white'
+          }
+        }
+      }
+    });
+
+    // Pie Chart for salary prediction
+    const salaryPieChartCtx = document.getElementById('salaryPieChartCanvas').getContext('2d');
+    const salaryPieChart = new Chart(salaryPieChartCtx, {
+      type: 'pie',
+      data: {
+        labels: ['Minimum Salary', 'Predicted Salary', 'Maximum Salary'],
+        datasets: [{
+          data: [predictedSalary * 0.8, predictedSalary, predictedSalary * 1.2],
+          backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(54, 162, 235, 0.6)', 'rgba(255, 206, 86, 0.6)']
+        }]
+      },
+      options: {
+        ...chartOptions,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Salary Prediction - Pie Chart',
+            color: 'white'
+          }
+        }
+      }
+    });
+
+    // Job Role Bar Chart
+    const jobBarChartCtx = document.getElementById('jobBarChartCanvas').getContext('2d');
+    const jobBarChart = new Chart(jobBarChartCtx, {
+      type: 'bar',
+      data: {
+        labels: jobLabels,
+        datasets: [{
+          label: 'Job Salary (INR)',
+          data: jobSalaries,
+          backgroundColor: 'rgba(75, 192, 192, 0.6)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        ...chartOptions,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Job Roles - Bar Chart',
+            color: 'white'
+          }
+        }
+      }
+    });
+
+    // Job Role Pie Chart
+    const jobPieChartCtx = document.getElementById('jobPieChartCanvas').getContext('2d');
+    const jobPieChart = new Chart(jobPieChartCtx, {
+      type: 'pie',
+      data: {
+        labels: jobLabels,
+        datasets: [{
+          data: jobSalaries,
+          backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(54, 162, 235, 0.6)', 'rgba(255, 206, 86, 0.6)']
+        }]
+      },
+      options: {
+        ...chartOptions,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Job Roles - Pie Chart',
+            color: 'white'
+          }
+        }
+      }
+    });
+
+    // Job Role Line Chart
+    const jobLineChartCtx = document.getElementById('jobLineChartCanvas').getContext('2d');
+    const jobLineChart = new Chart(jobLineChartCtx, {
+      type: 'line',
+      data: {
+        labels: jobLabels,
+        datasets: [{
+          label: 'Job Salary (INR)',
+          data: jobSalaries,
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 2,
+          fill: false
+        }]
+      },
+      options: {
+        ...chartOptions,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Job Roles - Line Chart',
+            color: 'white'
+          }
+        }
+      }
+    });
+
+    // Handle graph selector change
+    document.getElementById('graphSelector').addEventListener('change', (e) => {
+      const selectedGraph = e.target.value;
+
+      // Hide all graphs
+      document.querySelectorAll('canvas').forEach(canvas => {
+        canvas.style.display = 'none';
+      });
+
+      // Show the selected graph
+      document.getElementById(selectedGraph + 'Canvas').style.display = 'block';
+    });
+
+    // Show salary bar chart by default
+    document.getElementById('salaryBarChartCanvas').style.display = 'block';
+  </script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Visualization</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 30px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .graph-box {
+            background-color: #1E1E1E;
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .graph-box:hover {
+            transform: scale(1.05);
+        }
+
+        .graph-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .img-container {
+            display: none;
+            text-align: center;
+        }
+
+        .img-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+        }
+
+        .back-btn:hover {
+            background-color: #45a049;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Data Visualization</h1>
+
+        <div class="grid-container">
+            <div class="graph-box" onclick="toggleVisibility('gender')">
+                <div class="graph-title">Gender Distribution (Bar Chart)</div>
+                <div class="img-container" id="gender">
+                    <img src="{{ url_for('static', filename='gender_distribution.png') }}" alt="Gender Distribution">
+                </div>
+            </div>
+
+            <div class="graph-box" onclick="toggleVisibility('placement')">
+                <div class="graph-title">Placement Status (Bar Chart)</div>
+                <div class="img-container" id="placement">
+                    <img src="{{ url_for('static', filename='placement_status_gender.png') }}" alt="Placement Status Gender">
+                    <img src="{{ url_for('static', filename='placement_status_workex.png') }}" alt="Placement Status Work Experience">
+                </div>
+            </div>
+
+            <div class="graph-box" onclick="toggleVisibility('specialization')">
+                <div class="graph-title">Specialization (Pie Chart)</div>
+                <div class="img-container" id="specialization">
+                    <img src="{{ url_for('static', filename='specialization_pie.png') }}" alt="Specialization Pie Chart">
+                </div>
+            </div>
+
+            <div class="graph-box" onclick="toggleVisibility('salary')">
+                <div class="graph-title">Salary Distribution (Histogram)</div>
+                <div class="img-container" id="salary">
+                    <img src="{{ url_for('static', filename='salary_distribution.png') }}" alt="Salary Distribution">
+                </div>
+            </div>
+
+            <div class="graph-box" onclick="toggleVisibility('performance')">
+                <div class="graph-title">Education Performance (Box Plots)</div>
+                <div class="img-container" id="performance">
+                    <img src="{{ url_for('static', filename='degree_p_boxplot.png') }}" alt="Degree Performance">
+                    <img src="{{ url_for('static', filename='hsc_p_boxplot.png') }}" alt="HSC Performance">
+                    <img src="{{ url_for('static', filename='mba_p_boxplot.png') }}" alt="MBA Performance">
+                </div>
+            </div>
+
+            <div class="graph-box" onclick="toggleVisibility('pairplot')">
+                <div class="graph-title">Pairplot (Scatter Matrix)</div>
+                <div class="img-container" id="pairplot">
+                    <img src="{{ url_for('static', filename='pairplot.png') }}" alt="Pairplot">
+                </div>
+            </div>
+        </div>
+
+        <a href="/" class="back-btn">Back to Home</a>
+    </div>
+
+    <script>
+        function toggleVisibility(id) {
+            var element = document.getElementById(id);
+            element.style.display = element.style.display === "block" ? "none" : "block";
+        }
+    </script>
+
+</body>
+</html>

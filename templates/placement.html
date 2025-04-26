@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Placement Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4cc9f0;
+            --dark-color: #1a1a2e;
+            --light-color: #f8f9fa;
+            --success-color: #4caf50;
+            --danger-color: #f44336;
+            --warning-color: #ff9800;
+            --info-color: #2196f3;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-bottom: 60px;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .navbar a {
+            color: var(--dark-color);
+            text-decoration: none;
+            padding: 0.5rem 1.5rem;
+            margin: 0 0.5rem;
+            font-weight: 500;
+            border-radius: 30px;
+            transition: var(--transition);
+        }
+
+        .navbar a:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .container:hover {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #4361ee, #3a0ca3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            margin: 1rem 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background-color: white;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 1em;
+        }
+
+        select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        button {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            width: 100%;
+            margin: 0.5rem 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 14px rgba(0, 0, 0, 0.1);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        button.secondary {
+            background: white;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .quiz-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .quiz-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .question {
+            margin-bottom: 1.5rem;
+        }
+
+        .question p {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+        }
+
+        label {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid #e0e0e0;
+        }
+
+        label:hover {
+            background: #e9ecef;
+            border-color: var(--primary-color);
+        }
+
+        input[type="radio"] {
+            margin-right: 1rem;
+            accent-color: var(--primary-color);
+            width: 18px;
+            height: 18px;
+        }
+
+        #timer {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--danger-color);
+            margin: 1rem 0;
+            padding: 0.5rem;
+            background: #fff3f3;
+            border-radius: 8px;
+        }
+
+        .score-ring {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 2rem auto;
+            font-weight: 600;
+            box-shadow: var(--shadow);
+            background: conic-gradient(var(--success-color) 0% 75%, #f0f0f0 75% 100%);
+            position: relative;
+        }
+
+        .score-ring::before {
+            content: '';
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .score-ring span {
+            font-size: 2rem;
+            z-index: 1;
+            color: var(--dark-color);
+        }
+
+        .score-ring small {
+            z-index: 1;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .pass {
+            background: conic-gradient(var(--success-color) 0% var(--percentage), #f0f0f0 var(--percentage) 100%);
+        }
+
+        .fail {
+            background: conic-gradient(var(--danger-color) 0% var(--percentage), #f0f0f0 var(--percentage) 100%);
+        }
+
+        .solution {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #e8f5e9;
+            border-radius: 8px;
+            border-left: 4px solid var(--success-color);
+            display: none;
+        }
+
+        .solution.show {
+            display: block;
+        }
+
+        footer {
+            background: var(--dark-color);
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        #chatbot-container {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 350px;
+            max-height: 500px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .chatbot-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            transition: var(--transition);
+        }
+
+        .chatbot-toggle:hover {
+            transform: scale(1.1);
+            background: var(--secondary-color);
+        }
+
+        #user-input {
+            width: 100%;
+            padding: 12px 15px;
+            margin: 1rem 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        #user-input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        #chatbot-response {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .chatbot-body {
+            padding: 1rem;
+        }
+
+        .chatbot-body p {
+            margin-bottom: 0.5rem;
+        }
+
+        .chatbot-body a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .chatbot-body a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+
+            .navbar {
+                padding: 0.5rem;
+            }
+
+            .navbar a {
+                padding: 0.5rem 1rem;
+                margin: 0.25rem;
+                font-size: 0.9rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            #chatbot-container {
+                width: calc(100% - 40px);
+                right: 20px;
+                left: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Your HTML content remains the same -->
+    <div class="navbar">
+        <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('visualization') }}">View Visualization</a>
+        <a href="{{ url_for('register') }}">Register</a>
+        <a href="#">Contact</a>
+    </div>
+      
+    <div class="container">
+        <h1>Placement Quiz</h1>
+        <label>Select Category:</label>
+        <select id="category">
+            <option value="C">C Programming</option>
+            <option value="C++">C++</option>
+            <option value="Java">Java</option>
+            <option value="Python">Python</option>
+            <option value="Time and Distance">Time and Distance</option>
+            <option value="Calendar">Calendar</option>
+            <option value="Blood Relation">Blood Relation</option>
+        </select>
+        
+        <button onclick="startQuiz()">Start Quiz</button>
+        <div id="timer">Time Left: 1:00</div>
+        <div id="quiz-container" class="question-container"></div>
+        <button id="submit-btn" onclick="submitQuiz()" style="display:none;">Submit Quiz</button>
+        <div id="score-display"></div>
+    </div>
+
+    <div id="chatbot-container" class="container">
+        <h2>Quiz Assistant</h2>
+        <input type="text" id="user-input" placeholder="Ask me anything about the quiz..." />
+        <button onclick="getChatbotResponse()">Ask Question</button>
+        <div id="chatbot-response" style="margin-top: 10px;"></div>
+        <div class="chatbot-body" id="chatbot-body">
+            <p>Welcome! Need help with aptitude tests or job openings? Ask me anything.</p>
+            <p><a href="https://www.indiabix.com/" target="_blank">IndiaBix - Aptitude Prep</a></p>
+            <p><a href="https://www.geeksforgeeks.org/" target="_blank">GeeksforGeeks (Aptitude Section)</a></p>
+            <p><a href="https://www.freshersworld.com/" target="_blank">Freshersworld</a></p>
+            <p><a href="https://www.examveda.com/" target="_blank">Examveda</a></p>
+            <p><a href="https://parikshaguru.com/" target="_blank">ParikshaGuru</a></p>
+        </div>
+    </div>
+    
+    <div class="chatbot-toggle" onclick="toggleChatbot()">💬</div>
+    
+    <footer>
+        &copy; 2025 Campus Recruitment Prediction | All Rights Reserved
+    </footer>
+
+    <script>
+        // Your JavaScript remains the same
+        let correctAnswers = {};
+        let timerInterval;
+
+        function shuffleArray(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
+
+        function startQuiz() {
+            let category = document.getElementById("category").value;
+            let quizContainer = document.getElementById("quiz-container");
+            quizContainer.innerHTML = "";
+            correctAnswers = {};  
+
+            let questions = {
+                "C++": [
+    {
+        q: "What is a constructor?",
+        correct: "A special function called on object creation",
+        options: ["A destructor", "A function pointer", "A special function called on object creation", "A virtual function"]
+    },
+    {
+        q: "Which of the following header file is used for file handling in C++?",
+        correct: "<fstream>",
+        options: ["<file>", "<filestream>", "<stream>", "<fstream>"]
+    },
+    {
+        q: "What is polymorphism?",
+        correct: "Ability to take multiple forms",
+        options: ["Encapsulation", "Function overloading", "Ability to take multiple forms", "None of the above"]
+    },
+    {
+        q: "Which of the following type of class allows only one object of it to be created?",
+        correct: "Singleton class",
+        options: ["Singleton class", "Abstract class", "Friend class", "Virtual class"]
+    },
+    {
+        q: "Which of the following is not a type of constructor?",
+        correct: "Friend constructor",
+        options: ["Copy constructor", "Friend constructor", "Default constructor", "Parameterized constructor"]
+    },
+    {
+        q: "Which of the following statements is correct?",
+        correct: "Base class pointer can point to derived class.",
+        options: ["Base class pointer can point to derived class.", "Derived class pointer can point to base class.", "Pointers are not used in C++", "None of the above"]
+    },
+    {
+        q: "Which of the following is not a member of a class?",
+        correct: "Friend function",
+        options: ["Static function", "Virtual function", "Const function", "Friend function"]
+    },
+    {
+        q: "Which of the following concepts means determining at runtime what method to invoke?",
+        correct: "Runtime polymorphism",
+        options: ["Encapsulation", "Function overloading", "Runtime polymorphism", "None of the above"]
+    },
+    {
+        q: "A constructor that accepts no parameters is called?",
+        correct: "Default constructor",
+        options: ["Default constructor", "Copy constructor", "Parameterized constructor", "Virtual constructor"]
+    },
+    {
+        q: "What happens if a class has only parameterized constructors and no default constructor, and an object is created without arguments?",
+        correct: "Compilation error",
+        options: ["Object is created", "Runtime error", "Compilation error", "Object is assigned default values"]
+    }
+],
+
+                "C": [
+    { q: "What is a pointer?", correct: "A variable storing memory address", options: ["A pointer to an object", "A function argument", "A variable storing memory address", "An integer"] },
+    { q: "What is malloc() used for?", correct: "Memory allocation", options: ["File handling", "Memory allocation", "Stack operations", "Printing"] },
+    { q: "What will be the output of:\n\nint main() {\n    int m = 10;\n    int x = printf(\"%d\\n\", m);\n    printf(\"%d\\n\", x);\n    return 0;\n}", correct: "10\n2", options: ["10\n2", "10 10", "Compilation error", "Undefined output"] },
+    { q: "What will be the output of the following program?\n\nint main() { char a=0b1010; printf(\"%\\02X\",a); }", correct: "0A", options: ["OA", "a", "Oa", "10"] },
+    { q: "Will the following string be terminated with NULL?\nchar str[]={'H','e','l','l','o'};", correct: "No", options: ["Yes", "No"] },
+    { q: "Who is the father of C language?", correct: "Dennis Ritchie", options: ["Steve Jobs", "James Gosling", "Dennis Ritchie", "Rasmus Lerdorf"] },
+    { q: "Which of the following is not a valid C variable name?", correct: "int $main;", options: ["int number;", "float rate;", "int variable_count;", "int $main;"] },
+    { q: "Which is a valid C expression?", correct: "int my_num = 100000;", options: ["int my_num = 100,000;", "int my_num = 100000;", "int my num = 1000;", "int $my_num = 10000;"] },
+    { q: "Which of the following cannot be a variable name in C?", correct: "volatile", options: ["volatile", "true", "friend", "export"] },
+    { q: "What is the size of an int on most 32-bit systems?", correct: "4 bytes", options: ["2 bytes", "4 bytes", "8 bytes", "Depends on compiler"] }
+],
+
+               "Java": [
+    { q: "What is JVM?", correct: "Java Virtual Machine", options: ["Java Visual Manager", "Java Virtual Machine", "Just Valid Methods", "Jumbo Vector Memory"] },
+    { q: "What is garbage collection?", correct: "Automatic memory management", options: ["Manual memory deallocation", "Cleaning up log files", "Automatic memory management", "Disk defragmentation"] },
+    { q: "Which keyword is used to inherit a class in Java?", correct: "extends", options: ["this", "super", "implements", "extends"] },
+    { q: "Which method is the entry point of a Java program?", correct: "main", options: ["start", "init", "main", "run"] },
+    { q: "Which of the following is not a primitive type in Java?", correct: "String", options: ["int", "boolean", "char", "String"] },
+    { q: "What is the default value of a boolean in Java?", correct: "false", options: ["true", "false", "0", "null"] },
+    { q: "Which access modifier makes members visible only within the same class?", correct: "private", options: ["protected", "public", "private", "default"] },
+    { q: "What is the size of int in Java?", correct: "4 bytes", options: ["2 bytes", "4 bytes", "8 bytes", "Depends on platform"] },
+    { q: "Which package is automatically imported in every Java program?", correct: "java.lang", options: ["java.util", "java.io", "java.lang", "java.net"] },
+    { q: "Which keyword is used to create an object in Java?", correct: "new", options: ["this", "new", "create", "make"] }
+],
+"Python": [
+    { q: "What is a lambda function?", correct: "Anonymous function", options: ["Named function", "Anonymous function", "Function pointer", "Recursive function"] },
+    { q: "What is list comprehension?", correct: "Concise way to create lists", options: ["Sorting algorithm", "Concise way to create lists", "Data structure", "None of the above"] },
+    { q: "What is the output of: print(type([]))", correct: "<class 'list'>", options: ["list", "<class 'list'>", "array", "dict"] },
+    { q: "Which keyword is used to define a function in Python?", correct: "def", options: ["func", "define", "function", "def"] },
+    { q: "What data type is the result of: 3 / 2 in Python 3?", correct: "float", options: ["int", "float", "double", "long"] },
+    { q: "What is the output of: bool(0)", correct: "False", options: ["True", "False", "0", "None"] },
+    { q: "Which of these is used to handle exceptions?", correct: "try-except", options: ["do-catch", "try-catch", "try-except", "try-handle"] },
+    { q: "How do you write comments in Python?", correct: "#", options: ["//", "#", "/* */", "<!-- -->"] },
+    { q: "What does len() function do?", correct: "Returns length", options: ["Adds elements", "Returns type", "Returns length", "None"] },
+    { q: "Which of the following is a valid variable name?", correct: "_my_var", options: ["2var", "_my_var", "my-var", "my var"] }
+],
+
+               "Time and Distance": [
+    { q: "If a car travels 60 km in 1 hour, how far will it travel in 2 hours?", correct: "120 km", options: ["60 km", "90 km", "120 km", "150 km"] },
+    { q: "What is the formula for speed?", correct: "Distance/Time", options: ["Distance + Time", "Distance/Time", "Time/Distance", "Distance * Time"] },
+    { q: "A man travels 50 km in two hours. He covers 20 km in first hour and stops for 10 mins. What factor should he increase speed to reach on time?", correct: "1.8", options: ["1.2", "1.8", "2.4", "1.5"] },
+    { q: "What is the diameter in cm of a cylinder with height 6 cm and curved surface area five times the area of the two bases?", correct: "2.4", options: ["3", "2.4", "1.2", "0.9"] },
+    { q: "What is the unit of speed?", correct: "km/hr", options: ["sec", "km/hr", "m", "kg"] },
+    { q: "A train of 120m length crosses a pole in 10s. What is its speed?", correct: "12 m/s", options: ["10 m/s", "12 m/s", "15 m/s", "18 m/s"] },
+    { q: "How long will a train 180m long running at 60 km/hr take to cross a platform 120m long?", correct: "18 sec", options: ["12 sec", "15 sec", "18 sec", "20 sec"] },
+    { q: "What is average speed if a car travels at 60 km/hr for 1 hour and 40 km/hr for 2 hours?", correct: "46.67 km/hr", options: ["50", "46.67 km/hr", "55", "60"] },
+    { q: "If speed is doubled, what happens to time to cover same distance?", correct: "Halved", options: ["Doubled", "Same", "Halved", "Quadrupled"] },
+    { q: "If distance is constant and time increases, speed will?", correct: "Decrease", options: ["Increase", "Stay same", "Decrease", "Can't say"] }
+]
+
+            };
+
+            questions[category].forEach((item, index) => {
+                let shuffledOptions = shuffleArray([...item.options]); 
+                correctAnswers[`q${index}`] = item.correct;
+
+                let optionsHtml = shuffledOptions.map(option => `
+                    <label><input type="radio" name="q${index}" value="${option}"> ${option}</label>
+                `).join('');
+
+                quizContainer.innerHTML += `
+                    <div class="quiz-card">
+                        <div class="question">
+                            <p>Q${index + 1}: ${item.q}</p>
+                            <div class="options">
+                                ${optionsHtml}
+                            </div>
+                            <button class="secondary" onclick="showSolution('${item.correct}', this)" style="display:none; margin-top: 1rem;">View Solution</button>
+                            <div class="solution" id="solution-${index}">
+                                <strong>Correct Answer:</strong> ${item.correct}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById("submit-btn").style.display = "block";
+            startTimer(60); // Start a 60-second countdown
+        }
+
+        function startTimer(duration) {
+            let timerDisplay = document.getElementById("timer");
+            let timeLeft = duration;
+
+            clearInterval(timerInterval); // Clear any existing timer
+            timerInterval = setInterval(() => {
+                let minutes = Math.floor(timeLeft / 60);
+                let seconds = timeLeft % 60;
+                timerDisplay.innerText = `Time Left: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitQuiz(); // Auto-submit the quiz when time runs out
+                }
+                timeLeft--;
+            }, 1000);
+        }
+
+        function submitQuiz() {
+            clearInterval(timerInterval); // Stop the timer
+
+            let totalQuestions = Object.keys(correctAnswers).length;
+            let correctCount = 0;
+
+            for (let key in correctAnswers) {
+                let selected = document.querySelector(`input[name="${key}"]:checked`);
+                if (selected && selected.value === correctAnswers[key]) {
+                    correctCount++;
+                }
+            }
+
+            let percentage = (correctCount / totalQuestions) * 100;
+            let scoreDisplay = document.getElementById("score-display");
+            let status = percentage >= 50 ? "pass" : "fail";
+            let statusText = percentage >= 50 ? "Passed" : "Failed";
+
+            scoreDisplay.innerHTML = `
+                <div class="score-ring ${status}" style="--percentage: ${percentage}%">
+                    <span>${Math.round(percentage)}%</span>
+                    <small>${statusText}</small>
+                </div>
+                <p style="text-align: center; margin-top: 1rem; font-weight: 500;">
+                    You answered ${correctCount} out of ${totalQuestions} questions correctly.
+                </p>
+            `;
+
+            // Show the "View Solution" buttons after submitting
+            document.querySelectorAll('.quiz-card button').forEach(button => {
+                button.style.display = 'inline-block';
+            });
+        }
+
+        function showSolution(correctAnswer, button) {
+            const solutionDiv = button.nextElementSibling;
+            solutionDiv.classList.toggle('show');
+        }
+
+        function getChatbotResponse() {
+            const userInput = document.getElementById("user-input").value.toLowerCase();
+            const responseDiv = document.getElementById("chatbot-response");
+            let response = "I'm sorry, I didn't understand that. Please try asking about programming concepts or aptitude questions.";
+
+            // Simple FAQ responses
+            const faqs = {
+    // ✅ C Language
+    "what is a pointer": "A pointer is a variable that stores the memory address of another variable. Instead of holding a direct value, it holds the location where the value is stored. Pointers are commonly used in languages like C and C++.",
+    "what is malloc": "malloc() (short for memory allocation) is a function in C used to dynamically allocate memory at runtime. It allocates a specified number of bytes in the heap and returns a pointer to the first byte of the allocated memory block.",
+    "what is printf": "printf is a standard library function in C used to print formatted output to the console.",
+    "what is sizeof int": "The sizeof operator in C returns the size of a data type. On a 32-bit system, sizeof(int) typically returns 4 bytes.",
+    "what is null terminated string": "In C, strings are arrays of characters terminated with a special null character ('\\0'), indicating the end of the string.",
+    "what is a valid c variable": "A valid C variable name must begin with a letter (A-Z or a-z) or underscore (_) and can be followed by letters, digits, or underscores. Reserved keywords cannot be used as variable names.",
+
+    // ✅ C++
+    "what is a constructor": "A constructor is a special member function that is automatically called when an object is created. It has the same name as the class and is used to initialize object properties.",
+    "what is a class": "A class in C++ is a user-defined blueprint for creating objects. It encapsulates data for the object and methods to manipulate that data.",
+    "what is inheritance": "Inheritance allows one class (child) to inherit the properties and behaviors (methods) of another class (parent), promoting code reuse.",
+    "what is encapsulation": "Encapsulation is the concept of bundling data and methods that operate on that data within one unit, i.e., a class. It restricts direct access to some of the object's components.",
+    "what is object": "An object is an instance of a class. It is created using the class definition and can access the class's methods and properties.",
+    
+    // ✅ Java
+    "what is jvm": "JVM stands for Java Virtual Machine, which is an abstract computing machine that enables computers to run Java bytecode, making Java programs platform-independent.",
+    "what is garbage collection": "Garbage collection is Java’s automatic memory management system. It identifies and deletes objects that are no longer used, freeing memory.",
+    "what is public static void main": "This is the entry point of a Java program. 'public' allows it to be called from anywhere, 'static' allows it to run without creating an object, and 'void' means it returns no value.",
+    "what is the extends keyword": "The 'extends' keyword is used in Java for class inheritance, allowing one class to inherit methods and fields from another.",
+    "what is the default value of boolean": "In Java, the default value of a boolean variable is false.",
+    "what is java package": "A package in Java is a namespace that organizes classes and interfaces. The java.lang package is imported by default.",
+    
+    // ✅ Python
+    "what is a lambda function": "A lambda function in Python is a small anonymous function defined using the 'lambda' keyword. It can take any number of arguments but only has one expression.",
+    "what is list comprehension": "List comprehension is a concise way to create lists in Python using a single line of code that includes a loop and condition.",
+    "what is def in python": "'def' is a keyword used in Python to define a function.",
+    "what is len function": "The len() function in Python returns the number of items (length) in an object like a string, list, tuple, etc.",
+    "what is bool of 0": "In Python, bool(0) returns False. Any non-zero number returns True.",
+    "what is try except": "The try-except block is used in Python to handle exceptions (runtime errors) and continue execution without crashing the program.",
+    
+    // ✅ Time and Distance
+    "what is speed formula": "The basic formula is Speed = Distance / Time. This relationship is used to solve problems related to motion and travel.",
+    "unit of speed": "The unit of speed is typically kilometers per hour (km/h) or meters per second (m/s).",
+    "what is average speed": "Average speed is total distance traveled divided by total time taken.",
+    "what happens if speed doubles": "If speed doubles and distance remains the same, the time required is halved.",
+    "train crosses pole formula": "To find the time a train takes to pass a pole: Time = Length of train / Speed.",
+    "what is relative speed": "Relative speed is the speed of one object in relation to another. When moving in opposite directions, it's the sum; when same direction, it's the difference.",
+
+    // ✅ OOP Concepts (Additional)
+    "what is polymorphism": "Polymorphism is a fundamental OOP concept that allows a single interface to represent different types or behaviors. It enables methods to behave differently based on the object instance.",
+    "what is a variable": "A variable is a symbolic name for a storage location in memory where a value is stored. It must be declared before use, depending on the programming language."
+};
+
+            // Check if the user input matches any of the FAQs
+            for (const question in faqs) {
+                if (userInput.includes(question)) {
+                    response = faqs[question];
+                    break;
+                }
+            }
+
+            // Display the response
+            responseDiv.innerHTML = response;
+            document.getElementById("user-input").value = "";
+        }
+
+        function toggleChatbot() {
+            const chatbot = document.getElementById("chatbot-container");
+            chatbot.style.display = chatbot.style.display === "block" ? "none" : "block";
+        }
+    </script>
+</body>
+</html>

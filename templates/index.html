@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campus Recruitment Prediction</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .navbar {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 15px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      padding: 14px 20px;
+      display: inline-block;
+      font-size: 18px;
+      transition: 0.3s;
+    }
+    .navbar a:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+      max-width: 850px;
+      margin-top: 50px;
+      backdrop-filter: blur(20px);
+      color: white;
+    }
+    .form-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+    .form-group {
+      width: 48%;
+      margin-bottom: 15px;
+      display: flex;
+      flex-direction: column;
+    }
+    .form-group select,
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      outline: none;
+    }
+    .submit-button {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(90deg, #ff416c, #ff4b2b);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: 0.3s;
+    }
+    .submit-button:hover {
+      transform: scale(1.05);
+      background: linear-gradient(90deg, #ff4b2b, #ff416c);
+    }
+    @media (max-width: 768px) {
+      .form-group {
+        width: 100%;
+      }
+    }
+    footer {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      text-align: center;
+      padding: 15px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.3);
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <a href="{{ url_for('placement') }}">Placement</a>
+    <a href="{{ url_for('home') }}">Home</a>
+    <a href="{{ url_for('visualization') }}">View Visualization</a>
+    <a href="{{ url_for('register') }}">Register</a>
+    <a href="#">Contact</a>
+  </div>
+  <div class="container">
+    <h1>Campus Placement Prediction</h1>
+    <form action="/submit" method="POST" class="form-container" id="recruitForm" onsubmit="return validateForm()">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" 
+               pattern="[A-Za-z\s]+" 
+               title="Only letters and spaces are allowed" 
+               {% if not is_logged_in %}disabled{% endif %} required>
+      </div>
+      
+      <div class="form-group">
+        <label for="gender">Gender (Male/Female)</label>
+        <select id="gender" name="gender" {% if not is_logged_in %}disabled{% endif %} required>
+          <option value="0" {% if user_data.get("gender") == "0" %}selected{% endif %}>Female</option>
+          <option value="1" {% if user_data.get("gender") == "1" %}selected{% endif %}>Male</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="ssc_p">Secondary School Score (%)</label>
+        <input type="number" id="ssc_p" name="ssc_p" value="{{ user_data.get('ssc_p', '') }}" min="0" {% if not is_logged_in %}disabled{% endif %} required>
+      </div>
+      <div class="form-group">
+        <label for="ssc_b">Secondary School Board</label>
+        <select id="ssc_b" name="ssc_b" {% if not is_logged_in %}disabled{% endif %} required>
+          <option value="1" {% if user_data.get("ssc_b") == "1" %}selected{% endif %}>Central</option>
+          <option value="0" {% if user_data.get("ssc_b") == "0" %}selected{% endif %}>Others</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="hsc_p">High School Score (%)</label>
+        <input type="number" id="hsc_p" name="hsc_p" value="{{ user_data.get('hsc_p', '') }}" min="0" {% if not is_logged_in %}disabled{% endif %} required>
+      </div>
+      <div class="form-group">
+        <label for="hsc_b">High School Board</label>
+        <select id="hsc_b" name="hsc_b" {% if not is_logged_in %}disabled{% endif %} required>
+          <option value="1" {% if user_data.get("hsc_b") == "1" %}selected{% endif %}>Central</option>
+          <option value="0" {% if user_data.get("hsc_b") == "0" %}selected{% endif %}>Others</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="hsc_s">High School Stream</label>
+        <select id="hsc_s" name="hsc_s" {% if not is_logged_in %}disabled{% endif %} required>
+          <option value="Commerce" {% if user_data.get("hsc_s") == "Commerce" %}selected{% endif %}>Commerce</option>
+          <option value="Science" {% if user_data.get("hsc_s") == "Science" %}selected{% endif %}>Science</option>
+          <option value="Arts" {% if user_data.get("hsc_s") == "Arts" %}selected{% endif %}>Arts</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="degree_p">Degree Score (%)</label>
+        <input type="number" id="degree_p" name="degree_p" min="0" {% if not is_logged_in %}disabled{% endif %} required>
+      </div>
+      <div class="form-group">
+        <label for="degree_t">Degree Stream</label>
+        <select id="degree_t" name="degree_t" {% if not is_logged_in %}disabled{% endif %} required>
+          <option value="Science and Technology" {% if user_data.get("degree_t") == "Sci&Tech" %}selected{% endif %}>Science and Technology</option>
+          <option value="Comm&Mgmt" {% if user_data.get("degree_t") == "Comm&Mgmt" %}selected{% endif %}>Commerce and Management</option>
+          <option value="Others" {% if user_data.get("degree_t") == "Others" %}selected{% endif %}>Others</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="workex">Work Experience</label>
+        <select id="workex" name="workex" {% if not is_logged_in %}disabled{% endif %} required>
+          <option value="1" {% if user_data.get("workex") == "1" %}selected{% endif %}>Yes</option>
+          <option value="0" {% if user_data.get("workex") == "0" %}selected{% endif %}>No</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="etest_p">ETest Score (%)</label>
+        <input type="number" id="etest_p" name="etest_p" min="0" {% if not is_logged_in %}disabled{% endif %} required>
+      </div>
+      <div class="form-group">
+        <label for="mejor_project">Mejor Project</label>
+        <input type="number" id="mejor_project" name="mejor_project" min="0" {% if not is_logged_in %}disabled{% endif %} required>
+      </div>
+      <div class="form-group">
+        <label for="certifications">Certifications</label>
+        <input type="number" id="certifications" name="certifications" min="0" {% if not is_logged_in %}disabled{% endif %} required>
+      </div>
+      <div class="form-group">
+        <label for="mini_projects">Mini Projects</label>
+        <input type="number" id="mini_projects" name="mini_projects" min="0" {% if not is_logged_in %}disabled{% endif %} required>
+      </div>
+      <div class="form-group">
+        <label for="communication_skills">Communication Rating</label>
+        <input type="number" id="communication_skills" name="communication_skills" min="0" max="10" step="0.1" {% if not is_logged_in %}disabled{% endif %} required>
+      </div>
+      <div class="form-group">
+        <label for="backlogs">Backlogs</label>
+        <input type="number" id="backlogs" name="backlogs" min="0" {% if not is_logged_in %}disabled{% endif %} required>
+      </div>
+      <div class="form-group">
+        <label for="hackathon">Hackathon</label>
+        <select id="hackathon" name="hackathon" required>
+          <option value="1">Yes</option>
+          <option value="0">No</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="specialisation">Specialisation</label>
+        <select id="specialisation" name="specialisation" {% if not is_logged_in %}disabled{% endif %} required>
+          <option value="0" {% if user_data.get("specialisation") == "0" %}selected{% endif %}>IoT</option>
+          <option value="1" {% if user_data.get("specialisation") == "1" %}selected{% endif %}>MernStack</option>
+          <option value="2" {% if user_data.get("specialisation") == "2" %}selected{% endif %}>DataScience</option>
+          <option value="3" {% if user_data.get("specialisation") == "3" %}selected{% endif %}>CyberSecurity</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="mca_p">MCA Score(%):</label>
+        <input type="number" id="mca_p" name="mca_p" min="0" {% if not is_logged_in %}disabled{% endif %} required>
+      </div>
+      <div class="form-group">
+        <label for="status">Status:</label>
+        <select id="status" name="status" {% if not is_logged_in %}disabled{% endif %} required>
+          <option value="1" {% if user_data.get("status") == "1" %}selected{% endif %}>Placed</option>
+          <option value="0" {% if user_data.get("status") == "0" %}selected{% endif %}>Not Placed</option>
+        </select>
+      </div>
+      <button type="submit" class="submit-button">Submit</button>
+    </form>
+  </div>
+<br><br><br><br>
+  <footer>
+    <p>&copy; 2025 Campus Recruitment. All rights reserved.</p>
+  </footer>
+
+  <script>
+    function validateForm() {
+      const form = document.getElementById('recruitForm');
+      const fields = form.querySelectorAll('[required]');
+      let valid = true;
+  
+      fields.forEach((field) => {
+        const value = field.value.trim();
+        const isNumberField = field.type === 'number';
+  
+        // Check if field is empty
+        if (!value) {
+          field.style.borderColor = 'red';
+          valid = false;
+          return;
+        }
+  
+        // Check if number is negative
+        if (isNumberField && parseFloat(value) < 0) {
+          field.style.borderColor = 'red';
+          valid = false;
+          return;
+        }
+  
+        // Reset border color if valid
+        field.style.borderColor = '';
+      });
+  
+      if (!valid) {
+        alert('Please correct the highlighted fields. No negative numbers or empty values allowed.');
+      }
+  
+      return valid;
+    }
+  </script>
+  
+</body>
+</html>
