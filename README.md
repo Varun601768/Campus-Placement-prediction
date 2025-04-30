@@ -1,3 +1,4 @@
+# Campus Placement Salary Prediction using Machine Learning
 The primary objective of this project is to develop a machine learning model that predicts
 a student's likelihood of securing a job during campus placements. The model aims to
 analyze various factors such as academic performance, work experience, technical skills,
